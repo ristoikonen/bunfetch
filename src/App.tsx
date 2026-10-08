@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 
 type UserLog = {
   id: number;
+  message: string;
   userEmail: string;
   locale: string;
   lastSeen: string | null;
@@ -84,6 +85,12 @@ export default function App() {
           <CardTitle>Recent user activity</CardTitle>
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <CardDescription>All locale activity, newest and future-dated rows first.</CardDescription>
+            <a
+              className="text-sm font-medium text-primary hover:underline"
+              href="/glow2"
+            >
+              Configure payload
+            </a>
             <label className="inline-flex items-center gap-2 text-sm text-muted-foreground">
               <input
                 checked={showPastRows}
@@ -129,27 +136,29 @@ export default function App() {
           ) : (
             <ul className="divide-y">
               {visibleLogs.map((log) => (
-                <li
-                  className="flex flex-col gap-2 py-4 first:pt-1 last:pb-1 sm:flex-row sm:items-center sm:justify-between"
-                  key={log.id}
-                >
-                  <span className="break-all text-sm font-medium">{log.userEmail}</span>
-                  <span className="flex flex-wrap gap-x-4 gap-y-2 text-xs text-muted-foreground">
-                    <span className="inline-flex items-center gap-1.5">
-                      <MapPin className="size-3.5" aria-hidden="true" />
-                      {log.locale}
+                <li className="py-4 first:pt-1 last:pb-1" key={log.id}>
+                  <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                    <span className="break-all text-sm font-medium">{log.userEmail}</span>
+                    <span className="flex flex-wrap gap-x-4 gap-y-2 text-xs text-muted-foreground">
+                      <span className="inline-flex items-center gap-1.5">
+                        <MapPin className="size-3.5" aria-hidden="true" />
+                        {log.locale}
+                      </span>
+                      <span className="inline-flex items-center gap-1.5">
+                        <Clock3 className="size-3.5" aria-hidden="true" />
+                        {formatTime(log.lastSeen)}
+                        {isFuture(log.lastSeen) && (
+                          <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/15 px-2 py-0.5 font-medium text-amber-600 dark:text-amber-400">
+                            <AlertTriangle className="size-3" aria-hidden="true" />
+                            Future
+                          </span>
+                        )}
+                      </span>
                     </span>
-                    <span className="inline-flex items-center gap-1.5">
-                      <Clock3 className="size-3.5" aria-hidden="true" />
-                      {formatTime(log.lastSeen)}
-                      {isFuture(log.lastSeen) && (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/15 px-2 py-0.5 font-medium text-amber-600 dark:text-amber-400">
-                          <AlertTriangle className="size-3" aria-hidden="true" />
-                          Future
-                        </span>
-                      )}
-                    </span>
-                  </span>
+                  </div>
+                  <p className="mt-2 whitespace-pre-wrap break-words text-sm text-muted-foreground">
+                    {log.message}
+                  </p>
                 </li>
               ))}
             </ul>
