@@ -151,6 +151,12 @@ export default function GlowForm() {
             <ArrowLeft className="size-4" aria-hidden="true" />
             Activity
           </a>
+          <a
+            className="text-sm font-medium text-primary hover:underline"
+            href="/signin.html"
+          >
+            Sign in
+          </a>
         </div>
       </header>
 

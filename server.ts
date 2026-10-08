@@ -1,4 +1,9 @@
 import { createClient } from "@libsql/client";
+import {
+  handleGoogleSession,
+  handleGoogleSignIn,
+  handleGoogleSignOut,
+} from "./src/services/verify";
 
 const port = Number(Bun.env.PORT ?? 3000);
 const databaseUrl = Bun.env.TURSO_DATABASE_URL;
@@ -13,6 +18,27 @@ const server = Bun.serve({
   hostname: Bun.env.HOST ?? "127.0.0.1",
   port,
   routes: {
+    "/api/auth/config": {
+      GET: () => {
+        const clientId = Bun.env.GOOGLE_CLIENT_ID?.trim();
+        if (!clientId) {
+          return Response.json(
+            { error: "Google sign-in is not configured." },
+            { status: 503 },
+          );
+        }
+        return Response.json({ clientId });
+      },
+    },
+    "/api/auth/google": {
+      POST: (req) => handleGoogleSignIn(req),
+    },
+    "/api/auth/session": {
+      GET: (req) => handleGoogleSession(req),
+    },
+    "/api/auth/signout": {
+      POST: () => handleGoogleSignOut(),
+    },
     "/api/glow": {
       POST: async (req) => {
         if (!db) {

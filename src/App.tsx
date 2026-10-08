@@ -82,7 +82,12 @@ export default function App() {
     <main className="flex min-h-screen items-start justify-center bg-background px-4 py-12 text-foreground">
       <Card className="w-full max-w-2xl shadow-[0_4px_20px_-2px_rgba(15,23,42,0.05),0_2px_6px_-1px_rgba(15,23,42,0.03)]">
         <CardHeader>
-          <CardTitle>Recent user activity</CardTitle>
+          <div className="flex items-center justify-between gap-3">
+            <CardTitle>Recent user activity</CardTitle>
+            <a className="text-sm font-medium text-primary hover:underline" href="/signin.html">
+              Sign in
+            </a>
+          </div>
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <CardDescription>All locale activity, newest and future-dated rows first.</CardDescription>
             <a

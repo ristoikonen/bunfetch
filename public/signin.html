@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f8fafc" />
+    <title>Sign in · IGlow Portal</title>
+    <style>
+      :root {
+        color-scheme: light;
+        font-family: Inter, "Open Sans", Arial, sans-serif;
+        color: #0f172a;
+        background: #f8fafc;
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        min-height: 100vh;
+        margin: 0;
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+      }
+
+      header, footer { background: #fff; }
+      header { border-bottom: 1px solid #e2e8f0; }
+      header > div, footer { padding: 1rem 1.5rem; }
+      header > div { max-width: 72rem; margin: auto; }
+
+      .brand { display: flex; align-items: center; gap: .75rem; font-size: .875rem; font-weight: 600; }
+      .brand-dot { width: 10px; height: 10px; border-radius: 50%; background: #f78522; box-shadow: 0 0 8px #f78522; }
+
+      main { display: grid; place-items: center; padding: 2rem 1rem; }
+      .card {
+        width: min(100%, 26rem);
+        padding: 2rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 1rem;
+        background: #fff;
+        box-shadow: 0 4px 20px -2px rgb(15 23 42 / 5%), 0 2px 6px -1px rgb(15 23 42 / 3%);
+      }
+
+      h1 { margin: 0; font-size: 1.5rem; letter-spacing: -.025em; }
+      .description { margin: .5rem 0 1.5rem; color: #64748b; font-size: .875rem; line-height: 1.5; }
+      #google-button { min-height: 44px; }
+      #status { min-height: 1.25rem; margin: 1rem 0 0; color: #64748b; font-size: .8125rem; }
+      #status.error { color: #b91c1c; }
+      #status.success { color: #047857; }
+
+      .signed-in { display: none; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #e2e8f0; }
+      .signed-in a { color: #2563eb; font-size: .875rem; font-weight: 600; text-decoration: none; }
+      .signed-in a:hover { text-decoration: underline; }
+      .signed-in button { margin-left: 1rem; border: 0; background: none; color: #64748b; cursor: pointer; }
+      footer { border-top: 1px solid #e2e8f0; color: #64748b; text-align: center; font-size: .75rem; }
+    </style>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+  </head>
+  <body>
+    <header>
+      <div class="brand"><span class="brand-dot"></span><span>IGlow Portal</span></div>
+    </header>
+    <main>
+      <section class="card" aria-labelledby="title">
+        <h1 id="title">Sign in</h1>
+        <p class="description">Optionally sign in with Google. The activity and Glow API remain available without signing in.</p>
+        <div id="google-button"></div>
+        <p id="status" role="status" aria-live="polite">Loading Google sign-in…</p>
+        <div class="signed-in" id="signed-in">
+          <a href="/">Open activity dashboard</a>
+          <a href="/glow2">Open Glow form</a>
+          <button id="signout" type="button">Sign out</button>
+        </div>
+      </section>
+    </main>
+    <footer>IGlowData Clinical Cadence Portal</footer>
+    <script>
+      const statusElement = document.querySelector("#status");
+      const signedInElement = document.querySelector("#signed-in");
+
+      function showStatus(message, kind = "") {
+        statusElement.textContent = message;
+        statusElement.className = kind;
+      }
+
+      async function updateSession() {
+        const response = await fetch("/api/auth/session");
+        if (!response.ok) return false;
+        const { user } = await response.json();
+        showStatus(`Signed in as ${user.email}`, "success");
+        signedInElement.style.display = "block";
+        return true;
+      }
+
+      async function handleGoogleCredential(result) {
+        showStatus("Verifying Google account…");
+        try {
+          const response = await fetch("/api/auth/google", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ credential: result.credential }),
+          });
+          const body = await response.json();
+          if (!response.ok) throw new Error(body.error || "Google sign-in failed.");
+          showStatus(`Signed in as ${body.user.email}`, "success");
+          signedInElement.style.display = "block";
+        } catch (error) {
+          showStatus(error instanceof Error ? error.message : "Google sign-in failed.", "error");
+        }
+      }
+
+      document.querySelector("#signout").addEventListener("click", async () => {
+        await fetch("/api/auth/signout", { method: "POST" });
+        signedInElement.style.display = "none";
+        showStatus("Signed out.");
+      });
+
+      async function initializeGoogleSignIn() {
+        try {
+          if (await updateSession()) return;
+          const response = await fetch("/api/auth/config");
+          const config = await response.json();
+          if (!response.ok) throw new Error(config.error || "Google sign-in is not configured.");
+
+          const waitForGoogle = setInterval(() => {
+            if (!window.google?.accounts?.id) return;
+            clearInterval(waitForGoogle);
+            window.google.accounts.id.initialize({
+              client_id: config.clientId,
+              callback: handleGoogleCredential,
+            });
+            window.google.accounts.id.renderButton(
+              document.querySelector("#google-button"),
+              { theme: "outline", size: "large", text: "signin_with", shape: "rectangular", width: 320 },
+            );
+            showStatus("Choose a Google account to sign in.");
+          }, 100);
+          setTimeout(() => {
+            clearInterval(waitForGoogle);
+            if (!window.google?.accounts?.id) showStatus("Google sign-in could not load. Check your network and try again.", "error");
+          }, 10000);
+        } catch (error) {
+          showStatus(error instanceof Error ? error.message : "Could not initialize Google sign-in.", "error");
+        }
+      }
+
+      initializeGoogleSignIn();
+    </script>
+  </body>
+</html>

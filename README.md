@@ -14,7 +14,15 @@ Create a local `.env` file with the Turso credentials (never commit it):
 ```dotenv
 TURSO_DATABASE_URL=libsql://your-database.turso.io
 TURSO_AUTH_TOKEN=your-turso-auth-token
+GOOGLE_CLIENT_ID=your-google-oauth-client-id
 ```
+
+Google sign-in is optional and available at <http://localhost:5173/signin.html>.
+Create a Google OAuth web client and add the app's origin (for local
+development, `http://localhost:5173`) to its authorized JavaScript origins.
+The sign-in page uses Google Identity Services and the Bun API verifies its ID
+credential. It sets an HttpOnly session cookie, but signing in does not gate
+the dashboard, Glow form, or their APIs.
 
 Start the API and Vite UI in separate terminals:
 
