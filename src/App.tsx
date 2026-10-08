@@ -28,6 +28,7 @@ function isFuture(value: string | null): boolean {
 export default function App() {
   const [logs, setLogs] = useState<UserLog[]>([]);
   const [selectedEmail, setSelectedEmail] = useState("all");
+  const [showPastRows, setShowPastRows] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -72,12 +73,27 @@ export default function App() {
     void loadUsers();
   }, []);
 
+  const visibleLogs = logs
+    .filter((log) => selectedEmail === "all" || log.userEmail === selectedEmail)
+    .filter((log) => showPastRows || isFuture(log.lastSeen));
+
   return (
-    <main className="dark flex min-h-screen items-start justify-center bg-background px-4 py-12 text-foreground">
-      <Card className="w-full max-w-2xl">
+    <main className="flex min-h-screen items-start justify-center bg-background px-4 py-12 text-foreground">
+      <Card className="w-full max-w-2xl shadow-[0_4px_20px_-2px_rgba(15,23,42,0.05),0_2px_6px_-1px_rgba(15,23,42,0.03)]">
         <CardHeader>
           <CardTitle>Recent user activity</CardTitle>
-          <CardDescription>All locale activity, newest and future-dated rows first.</CardDescription>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <CardDescription>All locale activity, newest and future-dated rows first.</CardDescription>
+            <label className="inline-flex items-center gap-2 text-sm text-muted-foreground">
+              <input
+                checked={showPastRows}
+                className="size-4 accent-primary"
+                onChange={(event) => setShowPastRows(event.target.checked)}
+                type="checkbox"
+              />
+              Show past rows
+            </label>
+          </div>
         </CardHeader>
         <CardContent>
           {!loading && !error && logs.length > 0 && (
@@ -106,11 +122,13 @@ export default function App() {
             <p className="py-4 text-sm text-destructive">{error}</p>
           ) : logs.length === 0 ? (
             <p className="py-4 text-sm text-muted-foreground">No activity found.</p>
+          ) : visibleLogs.length === 0 ? (
+            <p className="py-4 text-sm text-muted-foreground">
+              No future-dated rows match this filter. Check “Show past rows” to include older activity.
+            </p>
           ) : (
             <ul className="divide-y">
-              {logs
-                .filter((log) => selectedEmail === "all" || log.userEmail === selectedEmail)
-                .map((log) => (
+              {visibleLogs.map((log) => (
                 <li
                   className="flex flex-col gap-2 py-4 first:pt-1 last:pb-1 sm:flex-row sm:items-center sm:justify-between"
                   key={log.id}
