@@ -164,8 +164,8 @@ export default function GlowForm() {
         <Card className="gap-0 border-slate-200 p-6 shadow-[0_4px_20px_-2px_rgba(15,23,42,0.05),0_2px_6px_-1px_rgba(15,23,42,0.03)] sm:p-8 lg:col-span-7">
           <CardHeader className="mb-6 flex-row items-start justify-between border-b border-slate-100 px-0 pb-5">
             <div className="space-y-1">
-              <CardTitle className="text-xl font-bold tracking-tight">Payload Configuration</CardTitle>
-              <CardDescription>Configure IGlowData parameters in real time.</CardDescription>
+              <CardTitle className="text-xl font-bold tracking-tight">Catch Up Configuration</CardTitle>
+              <CardDescription>Define message, time and place.</CardDescription>
             </div>
             <div className="hidden items-center gap-2 pt-1 sm:flex" aria-label="Glow accent colors">
               {["#f78522", "#BF8040", "#406ABF", "#BF4040", "#950495"].map((color) => (
@@ -182,7 +182,7 @@ export default function GlowForm() {
             <form className="space-y-6" onSubmit={submitPayload}>
               <div className="space-y-2">
                 <label className="text-xs font-semibold uppercase tracking-wide text-slate-600" htmlFor="message">
-                  Message Payload
+                  Message
                 </label>
                 <Textarea
                   className="min-h-24 resize-y rounded-xl border-slate-200 bg-slate-50 px-4 py-3 focus-visible:bg-white focus-visible:ring-blue-600/20"
@@ -227,7 +227,7 @@ export default function GlowForm() {
               <div className="space-y-2">
                 <div className="flex items-center justify-between gap-3">
                   <label className="text-xs font-semibold uppercase tracking-wide text-slate-600" htmlFor="timestamp">
-                    Timestamp (HH:MM:SS)
+                    Todays Timestamp (HH:MM:SS)
                   </label>
                   <Button
                     className="h-auto px-0 text-xs text-primary hover:bg-transparent hover:text-blue-700"

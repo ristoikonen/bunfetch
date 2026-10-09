@@ -30,7 +30,7 @@
     "api": "bun --hot server.ts",
     "build": "vite build",
     "typecheck": "tsc --noEmit",
-    "all": "concurrently -k \"bun run dev\" \"bun run api\""
+    "dev:all": "bunx concurrently -k \"bun run dev\" \"bun run api\""
   },
   "type": "module"
 }
