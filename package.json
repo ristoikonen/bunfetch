@@ -29,7 +29,8 @@
     "dev": "vite",
     "api": "bun --hot server.ts",
     "build": "vite build",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "all": "concurrently -k \"bun run dev\" \"bun run api\""
   },
   "type": "module"
 }
