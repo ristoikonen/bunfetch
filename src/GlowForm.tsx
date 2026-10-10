@@ -326,7 +326,7 @@ export default function GlowForm() {
       </main>
 
       <footer className="border-t border-slate-200 bg-white px-4 py-5 text-center text-xs text-slate-500">
-        IGlowData Clinical Cadence Portal · Palette: #f78522, #BF8040, #406ABF, #BF4040, #950495
+        IGlow · Palette: #f78522, #BF8040, #406ABF, #BF4040, #950495
       </footer>
     </div>
   );

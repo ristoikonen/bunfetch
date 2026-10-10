@@ -5,7 +5,8 @@ import {
   handleGoogleSignOut,
 } from "./src/services/verify";
 
-const port = Number(Bun.env.PORT ?? 3000);
+const port = Number(process.env.PORT || Bun.env.PORT || 3000);
+const host = process.env.NODE_ENV === "production" ? "0.0.0.0" : (Bun.env.HOST || "127.0.0.1");
 const databaseUrl = Bun.env.TURSO_DATABASE_URL;
 const db = databaseUrl
   ? createClient({
@@ -15,7 +16,7 @@ const db = databaseUrl
   : null;
 
 const server = Bun.serve({
-  hostname: Bun.env.HOST ?? "127.0.0.1",
+  hostname: host,
   port,
   routes: {
     "/api/auth/config": {
@@ -144,8 +145,43 @@ const server = Bun.serve({
       },
     },
   },
-  fetch() {
-    return Response.json({ error: "Not Found" }, { status: 404 });
+  // This handles all page traffic that isn't caught by the '/api/...' definitions above
+  async fetch(req) {
+    const url = new URL(req.url);
+
+    // 1. Core Session Check: Inspect headers for your existing authentication tokens
+    const cookieHeader = req.headers.get("Cookie") || "";
+    const hasActiveSession = cookieHeader.includes("session_token"); // Adjust string match to match your verify utility cookie key
+
+    // 2. Default Root Path Handling
+    if (url.pathname === "/") {
+      if (hasActiveSession) {
+        // Logged-in users skip authentication and land straight onto your application workspace
+        return new Response(null, {
+          status: 302,
+          headers: { "Location": "/index.html" },
+        });
+      } else {
+        // Force unauthenticated browser traffic directly to the signin route
+        return new Response(null, {
+          status: 302,
+          headers: { "Location": "/signin.html" },
+        });
+      }
+    }
+
+    // 3. Serve your local frontend static web views safely out of your build/public directory
+    if (url.pathname === "/signin.html" || url.pathname === "/index.html") {
+      const file = Bun.file(`./public${url.pathname}`);
+      if (await file.exists()) {
+        return new Response(file);
+      }
+    }
+
+    return new Response(JSON.stringify({ error: "Not Found" }), { 
+      status: 404,
+      headers: { "Content-Type": "application/json" }
+    });
   },
 });
 

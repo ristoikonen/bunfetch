@@ -11,7 +11,7 @@ submission status. It sends `POST /api/glow` to insert the payload into
 
 Create a local `.env` file with the Turso credentials (never commit it):
 
-```dotenv
+```ts
 TURSO_DATABASE_URL=libsql://your-database.turso.io
 TURSO_AUTH_TOKEN=your-turso-auth-token
 GOOGLE_CLIENT_ID=your-google-oauth-client-id
