@@ -1,7 +1,41 @@
 import { GoogleAuthService } from "./googleauth";
+import { jwtVerify, createRemoteJWKSet } from "jose";
 
 const authService = new GoogleAuthService();
 const sessionCookieName = "google_session";
+
+const iapJwks = createRemoteJWKSet(
+  new URL("https://www.gstatic.com/iap/verify/public_key-jwk")
+);
+const IAP_ISSUER = "https://cloud.google.com/iap";
+
+
+// const user_email = await extractIapUserEmail(req);
+// if (!user_email || !/^([^\s@]+)@([^\s@]+)\.[^\s@]+$/.test(user_email)) {
+//   return Response.json({ error: "A valid IAP authenticated user email is required." }, { status: 400 });
+// }
+
+async function extractIapUserEmail(req: Request): Promise<string> {
+  const jwt = req.headers.get("x-goog-authenticated-user-jwt");
+  if (jwt) {
+    try {
+      const { payload } = await jwtVerify(jwt, iapJwks, {
+        issuer: IAP_ISSUER,
+      });
+      const emailClaim = payload.email;
+      if (typeof emailClaim === "string" && emailClaim) {
+        return emailClaim;
+      }
+    } catch (err) {
+      console.error("Failed to verify Google IAP JWT:", err);
+    }
+  }
+
+  // Fallback to x-goog-authenticated-user-email header if JWT is missing or invalid
+  const rawEmail = req.headers.get("x-goog-authenticated-user-email") || "";
+  return rawEmail.replace(/^accounts\.google\.com:/, "");
+}
+
 
 function cookieOptions(maxAge: number): string {
   const secure = Bun.env.NODE_ENV === "production" ? "; Secure" : "";

@@ -1,4 +1,5 @@
 import { createClient } from "@libsql/client";
+import { createRemoteJWKSet, jwtVerify } from 'jose';
 import {
   handleGoogleSession,
   handleGoogleSignIn,
@@ -7,6 +8,13 @@ import {
 
 const port = Number(process.env.PORT || Bun.env.PORT || 3000);
 const host = process.env.NODE_ENV === "production" ? "0.0.0.0" : (Bun.env.HOST || "127.0.0.1");
+const IAP_JWKS_URL = new URL('https://www.gstatic.com/iap/verify/public_key-jwks');
+
+// Create the remote JWK set helper (this acts as  "iapJwks")
+const iapJwks = createRemoteJWKSet(IAP_JWKS_URL);
+
+const issuer = "https://cloud.google.com/iap";
+
 const databaseUrl = Bun.env.TURSO_DATABASE_URL;
 const db = databaseUrl
   ? createClient({
@@ -14,6 +22,76 @@ const db = databaseUrl
       authToken: Bun.env.TURSO_AUTH_TOKEN,
     })
   : null;
+// Get your Project Number:
+// gcloud projects describe YOUR_PROJECT_ID --format="value(projectNumber)"
+
+
+// Get your Backend Service ID (if using a Load Balancer):
+// gcloud compute backend-services describe YOUR_BACKEND_SERVICE_NAME --global --format="value(id)"
+
+// authenticating-with-id-tokens
+// authenticating-with-id-tokens
+
+async function verifyIapToken(token: string, expectedAudience: string) {
+  try {
+    // Verify the token using Google's IAP keys
+    const { payload } = await jwtVerify(token, iapJwks, {
+      audience: expectedAudience, // Your IAP backend audience string (PROJECT_NUMBER/RESOURCE_ID)
+    });
+
+    console.log('IAP Token verified successfully:', payload);
+    return payload;
+  } catch (error) {
+    console.error('JWT verification failed:', error);
+    return null;
+  }
+}
+
+/* * *  * * * * *  * *  * *  * * * ** *  * ** * 
+
+  https://github.com/ProMehedi/bun-hono-better-auth/blob/main/server/src/server.ts
+  const app = new Hono<{
+  Variables: {
+    user: typeof auth.$Infer.Session.user | null
+    session: typeof auth.$Infer.Session.session | null
+  }
+}>({ strict: false })
+
+server.app(
+  '*',
+  cors({
+    origin: ['http://localhost:3000', 'http://localhost:8000'], // Specify allowed origins (update for production)
+    credentials: true,
+    maxAge: 86400, // Cache preflight for 1 day
+  })
+)
+
+*  *  * *  *  * *  *  * *  *  *   *  *  */
+
+
+async function extractIapUserEmail(req: Request): Promise<string> {
+  const jwt = req.headers.get("x-goog-authenticated-user-jwt");
+  if (jwt) {
+    try {
+      const { payload } = await jwtVerify(jwt, iapJwks, {
+        issuer: issuer,
+      });
+      const emailClaim = payload.email;
+      if (typeof emailClaim === "string" && emailClaim) {
+        return emailClaim;
+      }
+    } catch (err) {
+      console.error("Failed to verify Google IAP JWT:", err);
+    }
+  }
+
+  // Fallback to x-goog-authenticated-user-email header if JWT is missing or invalid
+  const rawEmail = req.headers                                                                                                .get("x-goog-authenticated-user-email") || "";
+  return rawEmail.replace(/^accounts\.google\.com:/, "");
+}
+
+
+
 
 const server = Bun.serve({
   hostname: host,
@@ -184,5 +262,6 @@ const server = Bun.serve({
     });
   },
 });
+
 
 console.log(`bunfetch running at http://localhost:${port}`);
