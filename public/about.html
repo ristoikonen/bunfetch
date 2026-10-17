@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Risukko Architecture Explorer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            color: #0f172a;
+        }
+        .mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        /* Custom glow accents */
+        .glow-cyan { box-shadow: 0 0 25px rgba(56, 189, 248, 0.25); }
+        .glow-rose { box-shadow: 0 0 25px rgba(244, 63, 94, 0.25); }
+        .glow-emerald { box-shadow: 0 0 25px rgba(16, 185, 129, 0.25); }
+        .glow-purple { box-shadow: 0 0 25px rgba(168, 85, 247, 0.25); }
+        .glow-yellow { box-shadow: 0 0 25px rgba(247, 133, 34, 0.25); }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-sky-200 selection:text-sky-900">
+
+    <!-- Top Navigation -->
+    <header class="w-full border-b border-slate-200 bg-white/80 backdrop-blur-md sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="openModal()">
+                <div class="w-9 h-9 rounded-lg bg-sky-50 border border-sky-200 flex items-center justify-center glow-cyan">
+                    <!-- Mini Logo Icon -->
+                    <svg class="w-6 h-6 text-sky-500" viewBox="0 0 894 195" fill="currentColor">
+                        <path d="M410 1562 c-101 -38 -179 -117 -219 -223 l-21 -54 0 -307 0 -308 18 -48 c40 -106 122 -188 222 -225 l46 -17 314 0 315 0 45 18 c119 46 169 97 224 225 l16 38 0 312 0 313 -18 49 c-38 108 -120 190 -227 227 l-50 17 -310 0 -310 -1 -45 -16z"/>
+                    </svg>
+                </div>
+                <span class="font-bold tracking-tight text-slate-900 text-lg">RISUKKO <span class="text-sky-500 font-normal">ARCHITECTURE EXPLORER</span></span>
+            </div>
+            <div class="flex items-center space-x-4">
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-600 border border-emerald-200">
+                    <span class="w-2 h-2 mr-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Bun API Live
+                </span>
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-rose-50 text-rose-600 border border-rose-200">
+                    ML-KEM-768 Secured
+                </span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Grid -->
+    <main class="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center flex-grow">
+        
+        <!-- Left Column: Interactive SVG Logo Trigger Card -->
+        <div class="lg:col-span-5 flex flex-col items-center">
+            <div onclick="openModal()" class="w-full max-w-md bg-white rounded-3xl p-10 border border-slate-200 shadow-xl shadow-slate-100 cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:border-sky-300 glow-cyan group relative overflow-hidden">
+                <div class="absolute -right-12 -top-12 w-32 h-32 bg-sky-100 rounded-full blur-2xl group-hover:bg-sky-200 transition-all"></div>
+                <div class="flex flex-col items-center justify-center space-y-6">
+                    <!-- SVG Logo Emblem -->
+                    <div class="w-64 h-64 flex items-center justify-center p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                        <svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 8940 1950" preserveAspectRatio="xMidYMid meet">
+                            <g transform="translate(0.000000,1950.000000) scale(0.100000,-0.100000)" fill="#0f172a" stroke="none">
+                                <path d="M410 1562 c-101 -38 -179 -117 -219 -223 l-21 -54 0 -307 0 -308 18 -48 c40 -106 122 -188 222 -225 l46 -17 314 0 315 0 45 18 c119 46 169 97 224 225 l16 38 0 312 0 313 -18 49 c-38 108 -120 190 -227 227 l-50 17 -310 0 -310 -1 -45 -16z m720 -181 c0 -11 -4 -23 -10 -26 -5 -3 -10 -14 -10 -24 l0 -18 37 1 37 1 3 -15 4 -15 -43 -22 c-24 -12 -63 -31 -88 -43 -25 -12 -58 -30 -75 -41 -16 -10 -37 -22 -45 -26 -8 -4 -21 -13 -28 -20 -7 -7 -20 -13 -28 -13 -8 0 -14 -4 -14 -8 0 -5 -24 -21 -52 -36 -136 -71 -224 -128 -220 -141 l2 -10 118 5 c64 3 192 5 284 5 l167 0 16 -16 16 -16 -14 -15 -15 -15 -268 -6 c-147 -4 -271 -10 -276 -15 l-8 -8 72 -32 c81 -37 143 -67 268 -134 47 -25 96 -48 110 -52 14 -3 36 -15 50 -25 l24 -19 -13 -16 -13 -16 -32 0 c-17 0 -48 9 -69 20 -44 24 -60 25 -77 5 -7 -8 -21 -15 -31 -15 l-19 0 -6 40 -7 40 -12 0 c-7 0 -23 10 -37 23 -14 13 -65 43 -114 67 -49 24 -91 46 -94 49 -5 6 -40 23 -113 55 l-38 16 -59 0 -59 0 -6 20 c-14 44 23 80 80 80 l24 0 34 30 c44 38 123 156 134 200 l9 35 27 3 27 3 0 -10 c0 -6 13 -11 28 -11 l29 0 60 58 c84 80 123 101 123 64 0 -10 -12 -32 -27 -49 -16 -17 -41 -48 -58 -69 l-29 -36 -44 -19 c-24 -11 -54 -19 -67 -19 l-24 0 -26 -37 c-42 -63 -24 -72 45 -22 23 17 61 41 84 53 58 31 250 158 254 168 2 5 9 14 15 21 7 7 21 29 31 50 l19 37 19 0 18 0 0 -19z"/>
+                                <path d="M1772 1448 l-12 -12 0 -213 0 -213 24 -6 c13 -3 35 -4 47 -2 l24 3 5 75 5 75 35 0 35 0 35 -72 35 -72 26 -6 c15 -3 39 -3 53 1 l27 6 -4 12 c-3 6 -23 43 -46 81 l-41 70 18 15 c10 8 25 26 35 40 l17 24 0 56 0 56 -27 32 -28 33 -55 14 c-30 8 -87 15 -125 15 l-71 0 -12 -12z m219 -99 c5 -8 9 -31 9 -52 l0 -37 -27 -11 c-15 -5 -45 -9 -67 -7 l-41 3 -3 54 -3 54 13 9 c7 5 35 7 62 5 l48 -4 9 -14z"/>
+                            </g>
+                        </svg>
+                    </div>
+                    <div class="text-center">
+                        <h2 class="text-sm font-semibold tracking-wider text-sky-500 uppercase">Click logo to inspect architecture</h2>
+                        <p class="text-xs text-slate-400 mt-1">risukko.com / ristoikonen/oksa</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: System Overview & Byte Graph -->
+        <div class="lg:col-span-7 space-y-6">
+            <div>
+                <span class="text-xs font-bold tracking-widest text-sky-500 uppercase">Architecture Blueprint</span>
+                <h1 class="text-3xl font-extrabold text-slate-900 mt-1 tracking-tight">Decentralized Asset & PQC Pipeline</h1>
+                <p class="text-slate-600 mt-2 text-sm leading-relaxed">
+                    The Risukko engine replaces traditional database overhead with deterministic 14-byte binary framing and post-quantum envelope security backed by ML-KEM-768.
+                </p>
+            </div>
+
+            <!-- 14-Byte Binary Buffer Allocation Card -->
+            <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm glow-yellow">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-sm font-bold text-slate-900 uppercase tracking-wider flex items-center">
+                        <span class="w-2.5 h-2.5 rounded-full bg-amber-500 mr-2"></span> 14-Byte Binary Buffer Allocation
+                    </h3>
+                    <span class="mono text-xs bg-amber-50 text-amber-700 px-2.5 py-1 rounded border border-amber-200 font-semibold">T0tTQQAAAAAAAACAAAAgAQE</span>
+                </div>
+                
+                <div class="grid grid-cols-5 gap-2 text-center text-xs">
+                    <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                        <div class="text-slate-400 text-[10px] uppercase font-bold">Bytes 0-8</div>
+                        <div class="font-bold text-slate-800 mt-1">9 Bytes</div>
+                        <div class="text-[11px] text-sky-600 mt-0.5">Name Payload</div>
+                    </div>
+                    <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                        <div class="text-slate-400 text-[10px] uppercase font-bold">9-10</div>
+                        <div class="font-bold text-slate-800 mt-1">2 Bytes</div>
+                        <div class="text-[11px] text-emerald-600 mt-0.5">Canvas Size</div>
+                    </div>
+                    <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                        <div class="text-slate-400 text-[10px] uppercase font-bold">11</div>
+                        <div class="font-bold text-slate-800 mt-1">1 Byte</div>
+                        <div class="text-[11px] text-purple-600 mt-0.5">Padding</div>
+                    </div>
+                    <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                        <div class="text-slate-400 text-[10px] uppercase font-bold">12</div>
+                        <div class="font-bold text-slate-800 mt-1">1 Byte</div>
+                        <div class="text-[11px] text-rose-600 mt-0.5">Variant</div>
+                    </div>
+                    <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                        <div class="text-slate-400 text-[10px] uppercase font-bold">13</div>
+                        <div class="font-bold text-slate-800 mt-1">1 Byte</div>
+                        <div class="text-[11px] text-amber-600 mt-0.5">Style Tag</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Action Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                    <div class="text-sky-500 font-bold text-sm">1. Vector SVG</div>
+                    <p class="text-slate-500 text-xs mt-1">Scalable geometry matching lossless coordinates.</p>
+                </div>
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                    <div class="text-emerald-500 font-bold text-sm">2. Bun Runtime</div>
+                    <p class="text-slate-500 text-xs mt-1">High-performance edge routing &amp; streaming API.</p>
+                </div>
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                    <div class="text-rose-500 font-bold text-sm">3. ML-KEM-768</div>
+                    <p class="text-slate-500 text-xs mt-1">Quantum-safe AES-256-GCM envelope encryption.</p>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Interactive Modal -->
+    <div id="architectureModal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm hidden">
+        <div class="bg-white rounded-3xl max-w-2xl w-full mx-4 p-8 border border-slate-200 shadow-2xl relative animate-in fade-in zoom-in duration-200">
+            <button onclick="closeModal()" class="absolute top-6 right-6 text-slate-400 hover:text-slate-700 bg-slate-100 hover:bg-slate-200 p-2 rounded-full transition-all">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+
+            <div class="flex items-center space-x-3 mb-6">
+                <div class="w-10 h-10 rounded-xl bg-sky-50 border border-sky-200 flex items-center justify-center text-sky-500 font-bold">R</div>
+                <div>
+                    <h3 class="text-lg font-bold text-slate-900">Risukko Architecture Breakdown</h3>
+                    <p class="text-xs text-slate-500">Interactive walkthrough for `risukko.com`</p>
+                </div>
+            </div>
+
+            <div class="space-y-4 text-sm text-slate-600">
+                <div class="p-4 rounded-2xl bg-slate-50 border border-slate-100">
+                    <strong class="text-slate-900 block mb-1">1. Vector SVG DNA</strong>
+                    Provides infinite crispness and scalability across all screen dimensions without payload bloat.
+                </div>
+                <div class="p-4 rounded-2xl bg-slate-50 border border-slate-100">
+                    <strong class="text-slate-900 block mb-1">2. 14-Byte Binary Universal ID</strong>
+                    Packs name bytes, canvas sizing, padding, variant, and style into a compact Base64URL string (`T0tTQQAAAAAAAACAAAAgAQE`) for database-free asset retrieval.
+                </div>
+                <div class="p-4 rounded-2xl bg-slate-50 border border-slate-100">
+                    <strong class="text-slate-900 block mb-1">3. Post-Quantum Vault (ML-KEM-768)</strong>
+                    Secures assets stored on Cloudflare R2 / Backblaze B2 using NIST FIPS 203 lattice cryptography and AES-256-GCM envelope encryption against future quantum threats.
+                </div>
+            </div>
+
+            <div class="mt-8 flex justify-end">
+                <button onclick="closeModal()" class="px-5 py-2.5 rounded-xl bg-slate-900 text-white text-xs font-semibold hover:bg-slate-800 transition-all">
+                    Got It, Close Inspector
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="w-full border-t border-slate-200 bg-white py-6 text-center text-xs text-slate-400">
+        <p>&copy; 2026 Risto Ikonen &bull; risukko.com &bull; Bun API + .NET 11 HPKE</p>
+    </footer>
+
+    <script>
+        function openModal() {
+            document.getElementById('architectureModal').classList.remove('hidden');
+        }
+        function closeModal() {
+            document.getElementById('architectureModal').classList.add('hidden');
+        }
+        // Close modal on outside click
+        window.onclick = function(event) {
+            let modal = document.getElementById('architectureModal');
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+    </script>
+</body>
+</html>

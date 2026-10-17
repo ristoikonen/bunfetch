@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>risukko.com - Behind the Icon Architecture</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Space Grotesk', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            glowCyan: '#00f3ff',
+            glowEmerald: '#10b981',
+            glowMagenta: '#ff007f',
+            darkBg: '#070a10',
+            cardBg: 'rgba(15, 23, 42, 0.75)',
+          },
+          boxShadow: {
+            'neon-cyan': '0 0 25px rgba(0, 243, 255, 0.45), 0 0 50px rgba(0, 243, 255, 0.2)',
+            'neon-magenta': '0 0 25px rgba(255, 0, 127, 0.45), 0 0 50px rgba(255, 0, 127, 0.2)',
+            'neon-emerald': '0 0 25px rgba(16, 185, 129, 0.45), 0 0 50px rgba(16, 185, 129, 0.2)',
+            'glow-card': '0 8px 32px 0 rgba(0, 243, 255, 0.15)',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Custom Background Grid Pattern */
+    body {
+      background-color: #070a10;
+      background-image: 
+        radial-gradient(circle at 50% 30%, rgba(0, 243, 255, 0.08) 0%, transparent 60%),
+        radial-gradient(circle at 80% 80%, rgba(255, 0, 127, 0.06) 0%, transparent 50%),
+        linear-gradient(rgba(0, 243, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 243, 255, 0.03) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 40px 40px, 40px 40px;
+    }
+
+    /* Glow Filters for Logo SVG */
+    .glow-svg {
+      filter: drop-shadow(0 0 12px rgba(0, 243, 255, 0.7)) drop-shadow(0 0 30px rgba(16, 185, 129, 0.4));
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .glow-svg:hover {
+      filter: drop-shadow(0 0 20px rgba(0, 243, 255, 1)) drop-shadow(0 0 45px rgba(255, 0, 127, 0.7));
+      transform: scale(1.02);
+    }
+
+    /* Pulse animation for interactive indicator */
+    @keyframes pulseGlow {
+      0%, 100% { opacity: 0.4; transform: scale(1); }
+      50% { opacity: 0.9; transform: scale(1.08); }
+    }
+    .pulse-glow {
+      animation: pulseGlow 2.5s infinite ease-in-out;
+    }
+
+    /* Custom Glassmorphic scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(7, 10, 16, 0.8);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(0, 243, 255, 0.3);
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(0, 243, 255, 0.6);
+    }
+  </style>
+</head>
+
+<text class="text-slate-100 font-sans antialiased min-h-screen flex flex-col justify-between selection:bg-glowCyan selection:text-black overflow-x-hidden">
+
+  <!-- Header / Brand Navigation -->
+  <header class="w-full border-b border-cyan-500/20 backdrop-blur-md bg-darkBg/60 sticky top-0 z-40 px-6 py-4 flex items-center justify-between">
+    <div class="flex items-center space-x-3">
+      <span class="inline-block w-3 h-3 rounded-full bg-glowCyan shadow-[0_0_10px_#00f3ff]"></span>
+      <span class="font-mono text-sm tracking-wider uppercase text-cyan-400">risukko.com / oksa engine</span>
+    </div>
+    <div class="flex items-center space-x-4 text-xs font-mono text-slate-400">
+      <span class="hidden sm:inline-block px-2.5 py-1 rounded-full border border-emerald-500/30 bg-emerald-950/20 text-emerald-400">
+        PQC: ML-KEM-768 Active
+      </span>
+      <span class="px-2.5 py-1 rounded-full border border-cyan-500/30 bg-cyan-950/20 text-cyan-300">
+        14-Byte Universal ID
+      </span>
+    </div>
+  </header>
+
+    <!-- Main Showcase Section -->
+  <main class="flex-1 flex flex-col items-center justify-center p-6 relative">
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="w-full border-t border-slate-800/80 bg-darkBg/80 px-6 py-4 text-center text-xs text-slate-500 font-mono">
+    <span>risukko.com &copy; 2026 &bull; ristoikonen/oksa engine</span>
+  </footer>
+  <!-- INTERACTIVE MODAL OVERLAY -->
+  <div id="archModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-slate-50/80 backdrop-blur-xl opacity-0 pointer-events-none transition-opacity duration-300">
+    <div class="relative w-full max-w-3xl bg-slate-950/90 border border-cyan-500/30 rounded-2xl shadow-glow-card overflow-hidden flex flex-col max-h-[90vh]">
+   
+      <!-- Modal Header -->
+      <div class="px-6 py-4 border-b border-slate-800 flex items-center justify-between bg-slate-900/50">
+        <div class="flex items-center space-x-3">
+          <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 shadow-[0_0_8px_#00f3ff]"></span>
+          <h2 class="font-bold text-slate-100 text-lg">Behind the Risukko Icon</h2>
+        </div>
+        <button onclick="closeModal()" class="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition-colors">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Step Navigation Tabs -->
+      <div class="grid grid-cols-3 border-b border-slate-800 bg-slate-900/30 text-xs font-mono">
+        <button id="tabBtn1" onclick="switchStep(1)" class="py-3 px-2 border-b-2 border-cyan-400 text-cyan-300 bg-cyan-950/20 font-medium transition-all">
+          1. Vector Math
+        </button>
+        <button id="tabBtn2" onclick="switchStep(2)" class="py-3 px-2 border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition-all">
+          2. 14-Byte Universal ID
+        </button>
+        <button id="tabBtn3" onclick="switchStep(3)" class="py-3 px-2 border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition-all">
+          3. Quantum Vault
+        </button>
+      </div>
+
+      <!-- Modal Body (Tab Panels) -->
+      <div class="p-6 overflow-y-auto flex-1 space-y-6">
+        
+        <!-- STEP 1: PURE VECTOR MATH -->
+        <div id="stepPanel1" class="space-y-4">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-mono text-cyan-400 uppercase tracking-widest">Layer 01 &bull; Visual Representation</span>
+            <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-cyan-950 text-cyan-300 border border-cyan-800">SVG Format</span>
+          </div>
+          <h3 class="text-xl font-bold text-slate-100">Pure Vector Math (Infinitely Scalable)</h3>
+          <p class="text-slate-300 text-sm leading-relaxed">
+            Unlike standard PNG or JPEG images made of fixed pixels, the Risukko logo is constructed entirely out of <strong>mathematical curves and vector paths</strong>.
+          </p>
+
+          <!-- Interactive Code/Diagram Box -->
+          <div class="bg-slate-900/90 rounded-xl p-4 border border-slate-800 font-mono text-xs space-y-3">
+            <div class="text-slate-400">// Sample path definition from logo emblem</div>
+            <div class="text-cyan-300 overflow-x-auto p-2 bg-slate-950 rounded border border-slate-800/80">
+              &lt;path d="M410 1562 c-101 -38 -179 -117 -219 -223 l-21 -54..." fill="#00f3ff"/&gt;
+            </div>
+            <div class="grid grid-cols-2 gap-2 pt-2 text-[11px] text-slate-400">
+              <div class="flex items-center space-x-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
+                <span>Zero resolution loss on 4K/8K displays</span>
+              </div>
+              <div class="flex items-center space-x-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
+                <span>Lightweight payload (&lt;3 KB raw vector)</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="p-3 rounded-lg bg-cyan-950/30 border border-cyan-500/20 text-xs text-cyan-200 leading-relaxed">
+            <strong>Layman Summary:</strong> No matter how huge or small you stretch this icon, it never loses sharpness because your device renders geometric formulas instead of zooming in on blocky pixel blocks.
+          </div>
+        </div>
+
+        <!-- STEP 2: 14-BYTE UNIVERSAL ID -->
+        <div id="stepPanel2" class="space-y-4 hidden">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-mono text-emerald-400 uppercase tracking-widest">Layer 02 &bull; Deterministic Identifier</span>
+            <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-emerald-950 text-emerald-300 border border-emerald-800">Base64URL Packed</span>
+          </div>
+          <h3 class="text-xl font-bold text-slate-100">The Compact 14-Byte Binary Universal ID</h3>
+          <p class="text-slate-300 text-sm leading-relaxed">
+            When you interact with an asset on <strong>risukko.com</strong>, the system packs all parameters into a fixed <strong>14-byte binary structure</strong>—eliminating the need for a database lookup!
+          </p>
+
+          <!-- Interactive Binary Breakdown Visual -->
+          <div class="bg-slate-900/90 rounded-xl p-4 border border-slate-800 space-y-3 font-mono text-xs">
+            <div class="text-slate-400 text-center mb-2">// 14-Byte Binary Buffer Allocation</div>
+            
+            <div class="grid grid-cols-12 gap-1 text-center font-bold">
+              <div class="col-span-6 bg-emerald-950/60 border border-emerald-500/40 p-2 rounded text-emerald-300">
+                Bytes 0-8 (9B)<br><span class="text-[10px] font-normal text-slate-400">Name Payload</span>
+              </div>
+              <div class="col-span-2 bg-cyan-950/60 border border-cyan-500/40 p-2 rounded text-cyan-300">
+                9-10 (2B)<br><span class="text-[10px] font-normal text-slate-400">Canvas</span>
+              </div>
+              <div class="col-span-2 bg-yellow-950/60 border border-yellow-500/40 p-2 rounded text-yellow-300">
+                11 (1B)<br><span class="text-[10px] font-normal text-slate-400">Padding</span>
+              </div>
+              <div class="col-span-1 bg-pink-950/60 border border-pink-500/40 p-1 rounded text-pink-300 text-[10px]">
+                12<br><span class="text-[8px] font-normal text-slate-400">Variant</span>
+              </div>
+              <div class="col-span-1 bg-purple-950/60 border border-purple-500/40 p-1 rounded text-purple-300 text-[10px]">
+                13<br><span class="text-[8px] font-normal text-slate-400">Style</span>
+              </div>
+            </div>
+
+            <div class="pt-2 text-slate-300 text-[11px] leading-normal bg-slate-950 p-2 rounded border border-slate-800">
+              <span class="text-emerald-400 font-bold">Output Base64URL:</span> <code class="text-slate-100">T0tTQQAAAAAAAACAAAAgAQE</code>
+            </div>
+          </div>
+
+          <div class="p-3 rounded-lg bg-emerald-950/30 border border-emerald-500/20 text-xs text-emerald-200 leading-relaxed">
+            <strong>Layman Summary:</strong> Instead of searching a huge database, the web address itself carries all instructions needed to generate or fetch your 3D asset in a tiny 14-character code.
+          </div>
+        </div>
+
+        <!-- STEP 3: QUANTUM-SAFE CLOUD VAULT -->
+        <div id="stepPanel3" class="space-y-4 hidden">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-mono text-pink-400 uppercase tracking-widest">Layer 03 &bull; Post-Quantum Security</span>
+            <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-pink-950 text-pink-300 border border-pink-800">ML-KEM-768 + AES-GCM</span>
+          </div>
+          <h3 class="text-xl font-bold text-slate-100">Quantum-Safe Cloud Vault (Bun + R2/B2)</h3>
+          <p class="text-slate-300 text-sm leading-relaxed">
+            Assets generated by the Bun backend are stored in Cloudflare R2 / Backblaze B2 object storage using <strong>ML-KEM-768 envelope encryption</strong> (NIST FIPS 203 post-quantum standard).
+          </p>
+
+          <!-- Security Workflow Diagram -->
+          <div class="bg-slate-900/90 rounded-xl p-4 border border-slate-800 font-mono text-xs space-y-3">
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-2 text-center text-[11px]">
+              
+              <div class="p-2.5 rounded bg-slate-950 border border-slate-800 w-full sm:w-1/3">
+                <div class="text-slate-400 font-bold mb-1">1. Generate Asset</div>
+                <div class="text-[10px] text-slate-500">Bun Engine generates 3D/2D asset in memory</div>
+              </div>
+
+              <div class="text-pink-400 font-bold">➔</div>
+
+              <div class="p-2.5 rounded bg-pink-950/40 border border-pink-500/30 w-full sm:w-1/3">
+                <div class="text-pink-300 font-bold mb-1">2. ML-KEM Wrap</div>
+                <div class="text-[10px] text-slate-400">Encapsulates AES key with NIST lattice math</div>
+              </div>
+
+              <div class="text-pink-400 font-bold">➔</div>
+
+              <div class="p-2.5 rounded bg-cyan-950/40 border border-cyan-500/30 w-full sm:w-1/3">
+                <div class="text-cyan-300 font-bold mb-1">3. Cloud Storage</div>
+                <div class="text-[10px] text-slate-400">Encrypted blob stored safely on R2/B2</div>
+              </div>
+
+            </div>
+          </div>
+
+          <div class="p-3 rounded-lg bg-pink-950/30 border border-pink-500/20 text-xs text-pink-200 leading-relaxed">
+            <strong>Layman Summary:</strong> Even if someone intercepts or steals your files from cloud storage today, quantum computers decades in the future won't be able to crack or read them because they are shielded by post-quantum encryption math.
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="px-6 py-4 border-t border-slate-800 bg-slate-900/50 flex items-center justify-between">
+        <div class="text-xs text-slate-400 font-mono">
+          Step <span id="stepCounter">1</span> of 3
+        </div>
+        <div class="flex space-x-2">
+          <button id="prevBtn" onclick="prevStep()" class="px-3 py-1.5 rounded-lg border border-slate-700 text-slate-300 text-xs font-mono hover:bg-slate-800 transition-colors disabled:opacity-30 disabled:pointer-events-none" disabled>
+            Back
+          </button>
+          <button id="nextBtn" onclick="nextStep()" class="px-4 py-1.5 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-xs font-mono transition-colors shadow-[0_0_15px_rgba(0,243,255,0.4)]">
+            Next Step
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <!-- JavaScript Interaction Logic -->
+  <script>
+    let currentStep = 1;
+
+    function openModal() {
+      const modal = document.getElementById('archModal');
+      modal.classList.remove('opacity-0', 'pointer-events-none');
+      switchStep(1);
+    }
+
+    function openModalStep(step) {
+      openModal();
+      switchStep(step);
+    }
+
+    function closeModal() {
+      const modal = document.getElementById('archModal');
+      modal.classList.add('opacity-0', 'pointer-events-none');
+    }
+
+    function switchStep(step) {
+      currentStep = step;
+      document.getElementById('stepCounter').innerText = step;
+
+      // Hide all panels
+      document.getElementById('stepPanel1').classList.add('hidden');
+      document.getElementById('stepPanel2').classList.add('hidden');
+      document.getElementById('stepPanel3').classList.add('hidden');
+
+      // Reset Tab Styles
+      for (let i = 1; i <= 3; i++) {
+        const btn = document.getElementById(`tabBtn${i}`);
+        btn.className = "py-3 px-2 border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition-all";
+      }
+
+      // Show selected panel & highlight tab
+      document.getElementById(`stepPanel${step}`).classList.remove('hidden');
+      const activeTab = document.getElementById(`tabBtn${step}`);
+      
+      if (step === 1) {
+        activeTab.className = "py-3 px-2 border-b-2 border-cyan-400 text-cyan-300 bg-cyan-950/20 font-medium transition-all";
+      } else if (step === 2) {
+        activeTab.className = "py-3 px-2 border-b-2 border-emerald-400 text-emerald-300 bg-emerald-950/20 font-medium transition-all";
+      } else if (step === 3) {
+        activeTab.className = "py-3 px-2 border-b-2 border-pink-400 text-pink-300 bg-pink-950/20 font-medium transition-all";
+      }
+
+      // Update Nav Buttons
+      document.getElementById('prevBtn').disabled = (step === 1);
+      
+      const nextBtn = document.getElementById('nextBtn');
+      if (step === 3) {
+        nextBtn.innerText = "Done";
+        nextBtn.onclick = closeModal;
+      } else {
+        nextBtn.innerText = "Next Step";
+        nextBtn.onclick = nextStep;
+      }
+    }
+
+    function nextStep() {
+      if (currentStep < 3) {
+        switchStep(currentStep + 1);
+      }
+    }
+
+    function prevStep() {
+      if (currentStep > 1) {
+        switchStep(currentStep - 1);
+      }
+    }
+
+    // Close on escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeModal();
+      }
+    });
+
+    // Close on clicking backdrop
+    document.getElementById('archModal').addEventListener('click', (e) => {
+      if (e.target.id === 'archModal') {
+        closeModal();
+      }
+    });
+  </script>
+
+
+
+
+</body>
+</html>
