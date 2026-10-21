@@ -84,8 +84,10 @@ export default function App() {
 
         <div className="flex items-center gap-3   px-4 ">
           <span className="size-2.5 rounded-full bg-[#f78522] shadow-[0_0_8px_#f78522]" />
-          <span className="text-sm font-semibold tracking-wide text-slate-900">IGlow Portal</span>
+          <span className="text-sm font-semibold tracking-wide text-slate-900">Meet & Greet</span>
+
           <div className="flex justify-end ml-auto">
+            
             <a className="text-sm font-medium text-primary hover:underline" href="/signin.html">
               Sign in
             </a>
@@ -101,11 +103,12 @@ export default function App() {
           </div>
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <CardDescription>Newest and future-dated rows first.</CardDescription>
+            
             <a
               className="text-sm font-medium text-primary hover:underline"
               href="/glow2"
             >
-              Configure payload
+              Configure Catch-Up
             </a>
             <label className="inline-flex items-center gap-2 text-sm text-muted-foreground">
               <input

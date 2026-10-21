@@ -11,6 +11,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
+const MAX_LENGTH = 240;
+
 const localePresets = [
   { name: "Palmer", label: "Palmer" },
   { name: "Crace", label: "Crace" },
@@ -48,6 +50,7 @@ function localDateTimeFor(time: string): string {
   return date.toISOString();
 }
 
+
 export default function GlowForm() {
   const [message, setMessage] = useState("System operating normally across regional grid.");
   const [locale, setLocale] = useState("Palmer");
@@ -71,6 +74,23 @@ export default function GlowForm() {
     }),
     [message, locale, timestamp, userEmail, anonymousId],
   );
+
+
+// Enforces bounds on every user input event + native HTML constraint
+const handleMessageChangeOld = (target: HTMLInputElement | HTMLTextAreaElement) => {
+  const value = target.value;
+  if (value.length <= MAX_LENGTH) {
+    setMessage(value);
+  }
+};
+
+const handleMessageChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const value = e.target.value;
+  if (value.length <= MAX_LENGTH) {
+    setMessage(value);
+  }
+};
+
 
   function resetForm() {
     setMessage("System operating normally across regional grid.");
@@ -187,8 +207,8 @@ export default function GlowForm() {
                 <Textarea
                   className="min-h-24 resize-y rounded-xl border-slate-200 bg-slate-50 px-4 py-3 focus-visible:bg-white focus-visible:ring-blue-600/20"
                   id="message"
-                  maxLength={2000}
-                  onChange={(event) => setMessage(event.target.value)}
+                  maxLength={MAX_LENGTH}
+                  onChange={handleMessageChange}
                   required
                   value={message}
                 />

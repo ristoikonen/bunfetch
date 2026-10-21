@@ -4,15 +4,14 @@ import {
   handleGoogleSession,
   handleGoogleSignIn,
   handleGoogleSignOut,
+  //extractIapUserEmail,
 } from "./src/services/verify";
 
 const port = Number(process.env.PORT || Bun.env.PORT || 3000);
 const host = process.env.NODE_ENV === "production" ? "0.0.0.0" : (Bun.env.HOST || "127.0.0.1");
+
 const IAP_JWKS_URL = new URL('https://www.gstatic.com/iap/verify/public_key-jwks');
-
-// Create the remote JWK set helper (this acts as  "iapJwks")
 const iapJwks = createRemoteJWKSet(IAP_JWKS_URL);
-
 const issuer = "https://cloud.google.com/iap";
 
 const databaseUrl = Bun.env.TURSO_DATABASE_URL;
@@ -22,6 +21,7 @@ const db = databaseUrl
       authToken: Bun.env.TURSO_AUTH_TOKEN,
     })
   : null;
+
 // Get your Project Number:
 // gcloud projects describe YOUR_PROJECT_ID --format="value(projectNumber)"
 
@@ -37,6 +37,8 @@ async function verifyIapToken(token: string, expectedAudience: string) {
     // Verify the token using Google's IAP keys
     const { payload } = await jwtVerify(token, iapJwks, {
       audience: expectedAudience, // Your IAP backend audience string (PROJECT_NUMBER/RESOURCE_ID)
+      issuer: 'https://cloud.google.com/iap',
+      algorithms: ['ES256'],
     });
 
     console.log('IAP Token verified successfully:', payload);
@@ -46,27 +48,38 @@ async function verifyIapToken(token: string, expectedAudience: string) {
     return null;
   }
 }
+interface IapPayload{
+  email: string;
+  sub: string;
+  iss: string;
+}
+const EXPECTED_AUDIENCE = '';
 
-/* * *  * * * * *  * *  * *  * * * ** *  * ** * 
+// token: string, expectedAudience: string
 
-  https://github.com/ProMehedi/bun-hono-better-auth/blob/main/server/src/server.ts
-  const app = new Hono<{
-  Variables: {
-    user: typeof auth.$Infer.Session.user | null
-    session: typeof auth.$Infer.Session.session | null
+async function verifyIapTokenCrypto(req: Request) :  Promise<IapPayload | null>{
+  try {
+
+  const jwtToken = req.headers.get("x-goog-authenticated-user-jwt") || null;
+
+    const { payload } = await jwtVerify(
+    jwtToken!, 
+    iapJwks, 
+    {
+      audience: EXPECTED_AUDIENCE, // Your IAP backend audience string (PROJECT_NUMBER/RESOURCE_ID)
+      issuer: 'https://cloud.google.com/iap',
+      algorithms: ['ES256'],
+    });
+
+    console.log('IAP Token verified successfully:', payload);
+    return payload as unknown as IapPayload;
+
+  } catch (error) {
+    console.error('JWT verification failed:', error);
+    return null;
   }
-}>({ strict: false })
+}
 
-server.app(
-  '*',
-  cors({
-    origin: ['http://localhost:3000', 'http://localhost:8000'], // Specify allowed origins (update for production)
-    credentials: true,
-    maxAge: 86400, // Cache preflight for 1 day
-  })
-)
-
-*  *  * *  *  * *  *  * *  *  *   *  *  */
 
 
 async function extractIapUserEmail(req: Request): Promise<string> {

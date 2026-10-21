@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CatchUp Hub - Word Switcher</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-white text-slate-900 font-sans antialiased min-h-screen flex items-center justify-center p-6">
+
+  <!-- Main Container -->
+  <div class="border border-slate-200 rounded-2xl p-8 shadow-sm max-w-md w-full bg-white text-center">
+    
+    <!-- App Brand -->
+    <h1 class="text-3xl font-extrabold tracking-tight text-slate-900 mb-6">
+      CatchUp Hub
+    </h1>
+    
+    <!-- Static Header Anchor -->
+    <div class="text-2xl font-bold text-slate-900 mb-2">
+      Meet &amp; Greet
+    </div>
+
+    <!-- Word Swapper Box (Instant swap below Meet & Greet, no motion/animation) -->
+    <div class="mt-2 text-lg font-mono font-bold text-sky-600 bg-slate-50 border border-slate-200 rounded-lg py-2 px-4 inline-block min-w-[160px]">
+      <span id="dynamic-word">Where</span>
+    </div>
+
+  </div>
+
+  <script>
+    const words = [ "Where", "When", "How"];
+    let currentIndex = 0;
+    const wordElement = document.getElementById("dynamic-word");
+
+    setInterval(() => {
+      currentIndex = (currentIndex + 1) % words.length;
+      wordElement.textContent = words[currentIndex];
+    }, 1400);
+  </script>
+
+</body>
+</html>

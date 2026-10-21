@@ -1,0 +1,41 @@
+# Git
+.git
+.gitignore
+
+# Dependencies & builds (regenerated inside the container)
+node_modules
+dist
+.bun
+*.lockb
+
+# Environment (secrets must be provided via Cloud Run env vars, not the image)
+.env
+.env.*
+!.env.example
+
+# Logs / runtime
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Editor / IDE
+.vscode
+.idea
+*.code-workspace
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project-specific / not needed in the image
+README.md
+vercel.json
+bunfetch.code-workspace
+
+# Docker
+Dockerfile
+.dockerignore

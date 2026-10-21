@@ -7,6 +7,7 @@ const sessionCookieName = "google_session";
 const iapJwks = createRemoteJWKSet(
   new URL("https://www.gstatic.com/iap/verify/public_key-jwk")
 );
+
 const IAP_ISSUER = "https://cloud.google.com/iap";
 
 
@@ -35,7 +36,6 @@ async function extractIapUserEmail(req: Request): Promise<string> {
   const rawEmail = req.headers.get("x-goog-authenticated-user-email") || "";
   return rawEmail.replace(/^accounts\.google\.com:/, "");
 }
-
 
 function cookieOptions(maxAge: number): string {
   const secure = Bun.env.NODE_ENV === "production" ? "; Secure" : "";
