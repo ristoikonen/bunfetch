@@ -28,7 +28,7 @@ async function extractIapUserEmail(req: Request): Promise<string> {
         return emailClaim;
       }
     } catch (err) {
-      console.error("Failed to verify Google IAP JWT:", err);
+      //console.error("Failed to verify Google IAP JWT:", err);
     }
   }
 
@@ -80,6 +80,43 @@ export async function handleGoogleSignIn(request: Request): Promise<Response> {
       "Set-Cookie": `${sessionCookieName}=${encodeURIComponent(body.credential)}; HttpOnly; SameSite=Lax; Path=/; Max-Age=${maxAge}${secure}`,
     });
 
+    // const sessionData = {
+    //   email: user.email,
+    //   name: user.name,
+    //   picture: user.picture,
+    // };
+
+    //const cookies = request.cookies;
+    //const cookies = new Bun.CookieMap(sessionData);
+
+    // Save the verified details inside an HttpOnly cookie session
+    // setCookie(c, 'user_session', JSON.stringify(sessionData), {
+    //   httpOnly: true, // Safe from cross-site scripting (XSS)
+    //   secure: true,   // Only sent over HTTPS
+    //   sameSite: 'Lax',
+    //   maxAge: 60 * 60 * 24, // 1 day
+    // });
+
+
+
+    // const cookies2 = cookies.set({
+    //   httpOnly: true, // Safe from cross-site scripting (XSS)
+    //   secure: true,   // Only sent over HTTPS
+    //   sameSite: 'lax',
+    //   maxAge: 60 * 60 * 24, // 1 day
+    // });
+
+
+          //const client = new OAuth2Client(Bun.env.GOOGLE_CLIENT_ID);
+
+          //const body = await response.json();
+
+          //const ticket = await client.verifyIdToken({
+          //  idToken: body,
+          //  audience: Bun.env.GOOGLE_CLIENT_ID,
+          //});
+
+
     return Response.json(
       {
         user: {
@@ -91,21 +128,21 @@ export async function handleGoogleSignIn(request: Request): Promise<Response> {
       { headers },
     );
   } catch (error) {
-    console.error("Google ID token verification failed.", error);
+    //console.error("Google ID token verification failed.", error);
     return Response.json({ error: "Google sign-in could not be verified." }, { status: 401 });
   }
 }
 
 export async function handleGoogleSession(request: Request): Promise<Response> {
 
-console.log(request);
+  //console.log(request);
   const credential = readCookie(request, sessionCookieName);
   if (!credential) {
     return Response.json({ error: "Not signed in." }, { status: 401 });
   }
 
   try {
-    console.log(credential);
+    //console.log(credential);
 
     const user = await authService.verifyIdToken(credential);
     return Response.json({

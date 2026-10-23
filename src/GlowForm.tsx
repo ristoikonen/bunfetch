@@ -136,6 +136,9 @@ const handleMessageChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAre
         kind: "success",
         message: result.message ?? "Payload saved successfully.",
       });
+
+      GoToRootPage();
+
     } catch (cause) {
       setStatus({
         kind: "error",
@@ -148,6 +151,18 @@ const handleMessageChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAre
     } finally {
       setSubmitting(false);
     }
+  }
+
+  async function GoToRootPage()
+  {
+    location.replace("/")
+    return true;
+  }
+
+  async function GoToGlowPage()
+  {
+    location.replace("/glow2")
+    return true;
   }
 
   const statusStyle = {
@@ -170,6 +185,12 @@ const handleMessageChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAre
           >
             <ArrowLeft className="size-4" aria-hidden="true" />
             Activity
+          </a>
+          <a
+            className="text-sm font-medium text-primary hover:underline"
+            href="/"
+          >
+            Activity List
           </a>
           <a
             className="text-sm font-medium text-primary hover:underline"

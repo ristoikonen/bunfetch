@@ -29,7 +29,7 @@ async function extractIapUserEmail(req: Request): Promise<string> {
         return emailClaim;
       }
     } catch (err) {
-      console.error("Failed to verify Google IAP JWT:", err);
+      //console.error("Failed to verify Google IAP JWT:", err);
     }
   }
 
@@ -135,7 +135,7 @@ const server = Bun.serve({
             { status: 201 },
           );
         } catch (error) {
-          console.error("Failed to insert Glow log into Turso.", error);
+          //console.error("Failed to insert Glow log into Turso.", error);
           return Response.json({ error: "Could not save Glow log." }, { status: 500 });
         }
       },
@@ -166,7 +166,7 @@ const server = Bun.serve({
             })),
           });
         } catch (error) {
-          console.error("Failed to query glow_logs from Turso.", error);
+          //console.error("Failed to query glow_logs from Turso.", error);
           return Response.json(
             { error: "Could not load Glow users." },
             { status: 500 },

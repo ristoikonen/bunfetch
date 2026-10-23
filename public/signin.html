@@ -88,8 +88,15 @@
         const { user } = await response.json();
         showStatus(`Signed in as ${user.email}`, "success");
         signedInElement.style.display = "block";
+        GoToGlowPage();
         return true;
       }
+
+      async function GoToGlowPage() {
+        location.replace("/glow2")
+        return true;
+      }
+
 
       async function handleGoogleCredential(result) {
         showStatus("Verifying Google account…");
@@ -101,8 +108,12 @@
           });
           const body = await response.json();
           if (!response.ok) throw new Error(body.error || "Google sign-in failed.");
+
+         
           showStatus(`Signed in as ${body.user.email}`, "success");
           signedInElement.style.display = "block";
+          console.log(body.user);
+          GoToGlowPage();
         } catch (error) {
           showStatus(error instanceof Error ? error.message : "Google sign-in failed.", "error");
         }

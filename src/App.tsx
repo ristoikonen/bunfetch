@@ -81,15 +81,15 @@ export default function App() {
   return (
     <main className="flex min-h-screen items-start justify-center bg-background px-4 py-12 text-foreground">
       <Card className="w-full max-w-2xl shadow-[0_4px_20px_-2px_rgba(15,23,42,0.05),0_2px_6px_-1px_rgba(15,23,42,0.03)]">
-
         <div className="flex items-center gap-3   px-4 ">
           <span className="size-2.5 rounded-full bg-[#f78522] shadow-[0_0_8px_#f78522]" />
           <span className="text-sm font-semibold tracking-wide text-slate-900">Meet & Greet</span>
-
           <div className="flex justify-end ml-auto">
-            
+            <a className="text-sm font-medium text-primary hover:underline" href="/glow2" >
+              Add new Meet 
+            </a>
             <a className="text-sm font-medium text-primary hover:underline" href="/signin.html">
-              Sign in
+                  Sign in
             </a>
           </div>
         </div>
@@ -99,17 +99,9 @@ export default function App() {
         <CardHeader>
           <div className="flex items-center justify-between gap-3">
             <CardTitle>Recent user activity</CardTitle>
-
           </div>
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <CardDescription>Newest and future-dated rows first.</CardDescription>
-            
-            <a
-              className="text-sm font-medium text-primary hover:underline"
-              href="/glow2"
-            >
-              Configure Catch-Up
-            </a>
             <label className="inline-flex items-center gap-2 text-sm text-muted-foreground">
               <input
                 checked={showPastRows}

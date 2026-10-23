@@ -23,14 +23,13 @@ const db = databaseUrl
   : null;
 
 // Get your Project Number:
-// gcloud projects describe YOUR_PROJECT_ID --format="value(projectNumber)"
-
+// bunfetch
+// gcloud projects describe 260134623986 --format="value(projectNumber)"
 
 // Get your Backend Service ID (if using a Load Balancer):
 // gcloud compute backend-services describe YOUR_BACKEND_SERVICE_NAME --global --format="value(id)"
+// authenticating-with-id-tokens
 
-// authenticating-with-id-tokens
-// authenticating-with-id-tokens
 
 async function verifyIapToken(token: string, expectedAudience: string) {
   try {
@@ -41,10 +40,10 @@ async function verifyIapToken(token: string, expectedAudience: string) {
       algorithms: ['ES256'],
     });
 
-    console.log('IAP Token verified successfully:', payload);
+    //console.log('IAP Token verified successfully:', payload);
     return payload;
   } catch (error) {
-    console.error('JWT verification failed:', error);
+    //console.error('JWT verification failed:', error);
     return null;
   }
 }
@@ -71,11 +70,11 @@ async function verifyIapTokenCrypto(req: Request) :  Promise<IapPayload | null>{
       algorithms: ['ES256'],
     });
 
-    console.log('IAP Token verified successfully:', payload);
+    //console.log('IAP Token verified successfully:', payload);
     return payload as unknown as IapPayload;
 
   } catch (error) {
-    console.error('JWT verification failed:', error);
+    //console.error('JWT verification failed:', error);
     return null;
   }
 }
@@ -94,7 +93,7 @@ async function extractIapUserEmail(req: Request): Promise<string> {
         return emailClaim;
       }
     } catch (err) {
-      console.error("Failed to verify Google IAP JWT:", err);
+      //console.error("Failed to verify Google IAP JWT:", err);
     }
   }
 
@@ -123,7 +122,9 @@ const server = Bun.serve({
       },
     },
     "/api/auth/google": {
-      POST: (req) => handleGoogleSignIn(req),
+      POST: (req) => {
+        return handleGoogleSignIn(req);
+        },
     },
     "/api/auth/session": {
       GET: (req) => handleGoogleSession(req),
@@ -196,7 +197,7 @@ const server = Bun.serve({
             { status: 201 },
           );
         } catch (error) {
-          console.error("Failed to insert Glow log into Turso.", error);
+          //console.error("Failed to insert Glow log into Turso.", error);
           return Response.json({ error: "Could not save Glow log." }, { status: 500 });
         }
       },
@@ -227,7 +228,7 @@ const server = Bun.serve({
             })),
           });
         } catch (error) {
-          console.error("Failed to query glow_logs from Turso.", error);
+          //console.error("Failed to query glow_logs from Turso.", error);
           return Response.json(
             { error: "Could not load Glow users." },
             { status: 500 },
@@ -240,11 +241,11 @@ const server = Bun.serve({
   async fetch(req) {
     const url = new URL(req.url);
 
-    // 1. Core Session Check: Inspect headers for your existing authentication tokens
+    // Core Session Check: Inspect headers for your existing authentication tokens
     const cookieHeader = req.headers.get("Cookie") || "";
     const hasActiveSession = cookieHeader.includes("session_token"); // Adjust string match to match your verify utility cookie key
 
-    // 2. Default Root Path Handling
+    // Default Root Path Handling
     if (url.pathname === "/") {
       if (hasActiveSession) {
         // Logged-in users skip authentication and land straight onto your application workspace
@@ -261,7 +262,7 @@ const server = Bun.serve({
       }
     }
 
-    // 3. Serve your local frontend static web views safely out of your build/public directory
+    // Serve your local frontend static web views safely out of your build/public directory
     if (url.pathname === "/signin.html" || url.pathname === "/index.html") {
       const file = Bun.file(`./public${url.pathname}`);
       if (await file.exists()) {
