@@ -30,6 +30,40 @@ const db = databaseUrl
 // gcloud compute backend-services describe YOUR_BACKEND_SERVICE_NAME --global --format="value(id)"
 // authenticating-with-id-tokens
 
+export interface IapUser {
+  email: string;
+  sub: string;
+}
+
+export async function authenticateIapRequest(req: Request): Promise<IapUser | null> {
+  const jwt = req.headers.get("x-goog-authenticated-user-jwt");
+  if (!jwt) {
+    return null;
+  }
+
+  const expectedAudience = Bun.env.IAP_AUDIENCE || EXPECTED_AUDIENCE;
+
+  try {
+    const { payload } = await jwtVerify(jwt, iapJwks, {
+      issuer: "https://cloud.google.com/iap",
+      audience: expectedAudience || undefined,
+      algorithms: ["ES256"],
+    });
+
+    const email = typeof payload.email === "string" ? payload.email : "";
+    const sub = typeof payload.sub === "string" ? payload.sub : "";
+
+    if (!email) {
+      return null;
+    }
+
+    return { email, sub };
+  } catch (error) {
+    // Token signature mismatch, expired, or invalid audience
+    console.error("IAP JWT verification failed:", error);
+    return null;
+  }
+}
 
 async function verifyIapToken(token: string, expectedAudience: string) {
   try {
@@ -126,9 +160,28 @@ const server = Bun.serve({
         return handleGoogleSignIn(req);
         },
     },
-    "/api/auth/session": {
+    "/api/auth/sessionOld": {
       GET: (req) => handleGoogleSession(req),
     },
+    "/api/auth/session": {
+    GET: async (req) => {
+    // Check IAP header first (production behind IAP)
+    const iapUser = await authenticateIapRequest(req);
+    if (iapUser) {
+      const authenticatedEmail = iapUser.email;
+      return Response.json({
+        user: {
+          email: iapUser.email,
+          name: iapUser.email.split("@")[0],
+          picture: null,
+        },
+      });
+    }
+
+    // 2. Fall back to local cookie session (for local dev)
+    return handleGoogleSession(req);
+  },
+},
     "/api/auth/signout": {
       POST: () => handleGoogleSignOut(),
     },
