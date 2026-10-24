@@ -8,8 +8,9 @@ import {
 } from "./src/services/verify";
 
 const port = Number(process.env.PORT || Bun.env.PORT || 3000);
-const host = process.env.NODE_ENV === "production" ? "0.0.0.0" : (Bun.env.HOST || "127.0.0.1");
+const host = process.env.VITE_APP_STAGE === "production" ? "0.0.0.0" : (Bun.env.HOST || "127.0.0.1");
 
+// Get public keys
 const IAP_JWKS_URL = new URL('https://www.gstatic.com/iap/verify/public_key-jwks');
 const iapJwks = createRemoteJWKSet(IAP_JWKS_URL);
 const issuer = "https://cloud.google.com/iap";
@@ -25,10 +26,11 @@ const db = databaseUrl
 // Get your Project Number:
 // bunfetch
 // gcloud projects describe 260134623986 --format="value(projectNumber)"
-
 // Get your Backend Service ID (if using a Load Balancer):
 // gcloud compute backend-services describe YOUR_BACKEND_SERVICE_NAME --global --format="value(id)"
 // authenticating-with-id-tokens
+
+const EXPECTED_AUDIENCE = '';
 
 export interface IapUser {
   email: string;
@@ -44,6 +46,7 @@ export async function authenticateIapRequest(req: Request): Promise<IapUser | nu
   const expectedAudience = Bun.env.IAP_AUDIENCE || EXPECTED_AUDIENCE;
 
   try {
+    // Verify the token using Google's IAP keys
     const { payload } = await jwtVerify(jwt, iapJwks, {
       issuer: "https://cloud.google.com/iap",
       audience: expectedAudience || undefined,
@@ -56,7 +59,7 @@ export async function authenticateIapRequest(req: Request): Promise<IapUser | nu
     if (!email) {
       return null;
     }
-
+    //console.log('IAP Token verified successfully:', payload);
     return { email, sub };
   } catch (error) {
     // Token signature mismatch, expired, or invalid audience
@@ -65,31 +68,34 @@ export async function authenticateIapRequest(req: Request): Promise<IapUser | nu
   }
 }
 
+/*
+
+interface IapPayload{
+  email: string;
+  sub: string;
+  iss: string;
+}
+
+
 async function verifyIapToken(token: string, expectedAudience: string) {
   try {
-    // Verify the token using Google's IAP keys
+    
     const { payload } = await jwtVerify(token, iapJwks, {
       audience: expectedAudience, // Your IAP backend audience string (PROJECT_NUMBER/RESOURCE_ID)
       issuer: 'https://cloud.google.com/iap',
       algorithms: ['ES256'],
     });
 
-    //console.log('IAP Token verified successfully:', payload);
+   
     return payload;
   } catch (error) {
-    //console.error('JWT verification failed:', error);
     return null;
   }
 }
-interface IapPayload{
-  email: string;
-  sub: string;
-  iss: string;
-}
-const EXPECTED_AUDIENCE = '';
+*/
 
-// token: string, expectedAudience: string
 
+/*
 async function verifyIapTokenCrypto(req: Request) :  Promise<IapPayload | null>{
   try {
 
@@ -104,11 +110,9 @@ async function verifyIapTokenCrypto(req: Request) :  Promise<IapPayload | null>{
       algorithms: ['ES256'],
     });
 
-    //console.log('IAP Token verified successfully:', payload);
     return payload as unknown as IapPayload;
 
   } catch (error) {
-    //console.error('JWT verification failed:', error);
     return null;
   }
 }
@@ -131,12 +135,12 @@ async function extractIapUserEmail(req: Request): Promise<string> {
     }
   }
 
+
   // Fallback to x-goog-authenticated-user-email header if JWT is missing or invalid
   const rawEmail = req.headers                                                                                                .get("x-goog-authenticated-user-email") || "";
   return rawEmail.replace(/^accounts\.google\.com:/, "");
 }
-
-
+*/
 
 
 const server = Bun.serve({
@@ -178,10 +182,10 @@ const server = Bun.serve({
       });
     }
 
-    // 2. Fall back to local cookie session (for local dev)
-    return handleGoogleSession(req);
-  },
-},
+        // 2. Fall back to local cookie session (for local dev)
+        return handleGoogleSession(req);
+      },
+    },
     "/api/auth/signout": {
       POST: () => handleGoogleSignOut(),
     },
@@ -263,7 +267,6 @@ const server = Bun.serve({
             { status: 503 },
           );
         }
-
         try {
           const result = await db.execute(`
             SELECT id, message, user_email, locale, created_at AS last_seen
@@ -307,6 +310,7 @@ const server = Bun.serve({
           headers: { "Location": "/index.html" },
         });
       } else {
+
         // Force unauthenticated browser traffic directly to the signin route
         return new Response(null, {
           status: 302,
@@ -323,6 +327,8 @@ const server = Bun.serve({
       }
     }
 
+    //return new Response("Not Found", { status: 404 });
+    
     return new Response(JSON.stringify({ error: "Not Found" }), { 
       status: 404,
       headers: { "Content-Type": "application/json" }

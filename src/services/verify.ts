@@ -38,7 +38,7 @@ async function extractIapUserEmail(req: Request): Promise<string> {
 }
 
 function cookieOptions(maxAge: number): string {
-  const secure = Bun.env.NODE_ENV === "production" ? "; Secure" : "";
+  const secure = Bun.env.VITE_APP_STAGE === "production" ? "; Secure" : "";
   return `${sessionCookieName}=; HttpOnly; SameSite=Lax; Path=/; Max-Age=${maxAge}${secure}`;
 }
 
@@ -75,7 +75,7 @@ export async function handleGoogleSignIn(request: Request): Promise<Response> {
   try {
     const user = await authService.verifyIdToken(body.credential);
     const maxAge = Math.max(0, user.exp - Math.floor(Date.now() / 1000));
-    const secure = Bun.env.NODE_ENV === "production" ? "; Secure" : "";
+    const secure = Bun.env.VITE_APP_STAGE === "production" ? "; Secure" : "";
     const headers = new Headers({
       "Set-Cookie": `${sessionCookieName}=${encodeURIComponent(body.credential)}; HttpOnly; SameSite=Lax; Path=/; Max-Age=${maxAge}${secure}`,
     });

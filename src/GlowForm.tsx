@@ -1,4 +1,4 @@
-import { useMemo, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { ArrowLeft, Check, Clipboard, Clock3, LoaderCircle, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -52,7 +52,7 @@ function localDateTimeFor(time: string): string {
 
 
 export default function GlowForm() {
-  const [message, setMessage] = useState("System operating normally across regional grid.");
+  const [message, setMessage] = useState("Coffee..?.");
   const [locale, setLocale] = useState("Palmer");
   const [timestamp, setTimestamp] = useState(currentTime);
   const [userEmail, setUserEmail] = useState("");
@@ -74,6 +74,23 @@ export default function GlowForm() {
     }),
     [message, locale, timestamp, userEmail, anonymousId],
   );
+
+  useEffect(() => {
+    async function loadUserSession() {
+      try {
+        const res = await fetch("/api/auth/session");
+        if (res.ok) {
+          const data = await res.json();
+          if (data.user?.email) {
+            setUserEmail(data.user.email);
+          }
+        }
+      } catch (err) {
+        console.error("Failed to load session email", err);
+      }
+    }
+    loadUserSession();
+  }, []);
 
 
 // Enforces bounds on every user input event + native HTML constraint
@@ -268,7 +285,7 @@ const handleMessageChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAre
               <div className="space-y-2">
                 <div className="flex items-center justify-between gap-3">
                   <label className="text-xs font-semibold uppercase tracking-wide text-slate-600" htmlFor="timestamp">
-                    Todays Timestamp (HH:MM:SS)
+                    Meet at...? Today's time only (HH:MM:SS)
                   </label>
                   <Button
                     className="h-auto px-0 text-xs text-primary hover:bg-transparent hover:text-blue-700"
@@ -308,6 +325,7 @@ const handleMessageChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAre
                   required
                   type="email"
                   value={userEmail}
+                  readOnly={Boolean(userEmail)}
                 />
               </div>
 
